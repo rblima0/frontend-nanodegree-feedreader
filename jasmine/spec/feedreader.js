@@ -8,12 +8,16 @@
  * since some of these tests may require DOM elements. We want
  * to ensure they don't run until the DOM is ready.
  */
+
 $(function() {
+
     /* This is our first test suite - a test suite just contains
     * a related set of tests. This suite is all about the RSS
     * feeds definitions, the allFeeds variable in our application.
     */
+
     describe('RSS Feeds', function() {
+
         /* This is our first test - it tests to make sure that the
          * allFeeds variable has been defined and that it is not
          * empty. Experiment with this before you get started on
@@ -21,52 +25,126 @@ $(function() {
          * allFeeds in app.js to be an empty array and refresh the
          * page?
          */
-        it('are defined', function() {
+
+        it('são definidos', function() {
             expect(allFeeds).toBeDefined();
             expect(allFeeds.length).not.toBe(0);
         });
 
-
-        /* TODO: Write a test that loops through each feed
-         * in the allFeeds object and ensures it has a URL defined
-         * and that the URL is not empty.
+        /* TODO: escreva um teste que faz um loop em cada feed
+         * no objeto allFeeds e garante que ele tenha uma URL definida
+         * e que o URL não está vazio.
          */
 
+        it('url é definida', function(){
+            for (let i = 0; i < allFeeds.length; i++) {
+                expect(allFeeds[i].url).toBeDefined();
+                expect(allFeeds[i].url.length).not.toBe(0);
+                expect(allFeeds[i].url).toContain("http://");
+            }
+        });
 
-        /* TODO: Write a test that loops through each feed
-         * in the allFeeds object and ensures it has a name defined
-         * and that the name is not empty.
+        /* TODO: escreve um teste que faz um loop em cada feed
+         * no objeto allFeeds e garante que ele tenha um nome definido
+         * e que o nome não está vazio.
          */
+
+        it('tem nome', function(){
+            for (let i = 0; i < allFeeds.length; i++) {
+                expect(allFeeds[i].name).toBeDefined();
+                expect(allFeeds[i].name.length).not.toBe(0);
+                expect(typeof allFeeds[i].name).toBe('string');
+            }
+        });
+
     });
 
 
     /* TODO: Write a new test suite named "The menu" */
 
-        /* TODO: Write a test that ensures the menu element is
-         * hidden by default. You'll have to analyze the HTML and
-         * the CSS to determine how we're performing the
-         * hiding/showing of the menu element.
-         */
+    describe('O menu', function() {
 
-         /* TODO: Write a test that ensures the menu changes
-          * visibility when the menu icon is clicked. This test
-          * should have two expectations: does the menu display when
-          * clicked and does it hide when clicked again.
-          */
+        /* TODO: Escreva um teste que garanta que o elemento de menu seja
+        * oculto por padrão. Você terá que analisar o HTML e
+        * o CSS para determinar como estamos executando o
+        * ocultação / exibição do elemento de menu.
+        */
+
+        it('menu oculto por padrão', function(){
+            expect($('body').hasClass('menu-hidden')).toBeTruthy();
+        });
+        
+        /* TODO: Escreva um teste que garanta as mudanças no menu
+        * visibilidade quando o ícone do menu é clicado. Esse teste
+        * deve ter duas expectativas: o menu exibe quando
+        * clicado e oculta quando clicado novamente.
+        */
+
+        let toggle = $('.menu-icon-link');
+        let body = document.body;
+
+        it('altera a visibilidade quando alguém clica no item de menu', function(){
+            toggle.click();
+            expect(body.classList).not.toContain('menu-hidden');
+            toggle.click();
+            expect(body.classList).toContain('menu-hidden');
+        });
+
+    });
+
 
     /* TODO: Write a new test suite named "Initial Entries" */
 
-        /* TODO: Write a test that ensures when the loadFeed
-         * function is called and completes its work, there is at least
-         * a single .entry element within the .feed container.
-         * Remember, loadFeed() is asynchronous so this test will require
-         * the use of Jasmine's beforeEach and asynchronous done() function.
-         */
+    describe('Entradas iniciais', function() {
+
+         
+        /* TODO: Escreva um teste que garanta quando o loadFeed
+        * função é chamada e completa seu trabalho, há pelo menos
+        * um único elemento .entry dentro do container .feed.
+        * Lembre-se, loadFeed () é assíncrono, então este teste exigirá
+        * o uso da função BeforeEach e assynchronous done () de Jasmine.
+        */
+
+        beforeEach(function(done) {
+            loadFeed(0, done);
+        });
+
+        it('loadFeed tem elemento', function(){
+            expect($('.entry').length).toBeGreaterThan(0);
+        });
+
+    });
+
 
     /* TODO: Write a new test suite named "New Feed Selection" */
 
-        /* TODO: Write a test that ensures when a new feed is loaded
-         * by the loadFeed function that the content actually changes.
-         * Remember, loadFeed() is asynchronous.
-         */
+    describe('Nova seleção de feed', function() {
+
+        
+        /* TODO: Escreva um teste que garanta quando um novo feed é carregado
+        * pela função loadFeed que o conteúdo realmente muda.
+        * Lembre-se, loadFeed () é assíncrono.
+        */
+
+        let fistFeed;
+        let secondFeed;
+
+        beforeEach(function(done) {
+            loadFeed(0, function(){
+                fistFeed = $('.feed').html();
+                done();
+            });
+        });
+
+        it('altera o feed quando tiver atualização', function(done){
+            loadFeed(1, function() {
+                expect(fistFeed).toBeDefined();
+                secondFeed = $('.feed').html();
+                expect(secondFeed).toBeDefined();
+                expect(fistFeed).not.toEqual(secondFeed);
+                done();
+            });
+        });
+
+   }); 
 }());
